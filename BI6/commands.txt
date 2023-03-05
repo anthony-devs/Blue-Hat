@@ -1,0 +1,13 @@
+'lock files' : Lock all files in the current directory
+'set mac address' : Set MacOS Mac address
+'unlock files' : Unlock locked files
+'scan ports' : Scan Ports
+'pyPhisher' : Launch PyPhisher
+'log keys' : Key logger
+'ping' : Ping addresses
+'fake identity' : Creates a fake identity
+'win wifi' : get windows Wifi passwords
+'get ip info' : Get information on public IP Addresses
+'randomize mac' : randomize macos mac address
+
+

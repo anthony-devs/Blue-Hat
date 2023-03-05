@@ -1,0 +1,16 @@
+cryptography
+requests
+bs4
+rich
+faker
+ipinfo
+re
+nmap
+pyphisher
+faker
+subprocess
+ipinfo
+sys
+subprocess
+string
+random
