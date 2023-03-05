@@ -89,7 +89,7 @@ def bi6():
         input('Press enter to exit')
             
     def pyPhisher():
-        os.system('cd pyphisher && python3 pyphisher.py')
+        os.system('pyphisher')
         input('Press enter to exit')
         
     def keyLog():
