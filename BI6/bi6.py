@@ -37,6 +37,7 @@ def bi6():
                 contents_encrypted = Fernet(key).encrypt(contents)
             with open(file, 'wb') as thefile:
                 thefile.write(contents_encrypted)
+        input('Press enter to exit')
                 
     def unlockFiles():
         files = []
@@ -57,6 +58,7 @@ def bi6():
                 contents_decrypted = Fernet(secretKey).decrypt(contents)
             with open(file, 'wb') as thefile:
                 thefile.write(contents_decrypted)
+        input('Press enter to exit')
             
     def get_random_macos_address():
         """Generate and return a MAC address in the format of Linux"""
@@ -71,6 +73,7 @@ def bi6():
                 else:
                     mac += random.choice(uppercased_hexdigits)
             mac += ":"
+        input('Press enter to exit')
         return mac.strip(":")
 
     def scanPorts():
@@ -83,9 +86,11 @@ def bi6():
             res = nmap.PortScanner().scan(target,str(i))
             res = res['scan'][target]['tcp'][i]['state']
             print(f'{target}:{i} Port {res}')
+        input('Press enter to exit')
             
     def pyPhisher():
         os.system('cd pyphisher && python3 pyphisher.py')
+        input('Press enter to exit')
         
     def keyLog():
         
@@ -104,11 +109,13 @@ def bi6():
         
         with keyboard.Listener(on_press=key_pressed, on_release=key_released) as listener:
             listener.join()
+        input('Press enter to exit')
             
         
     def ping():
         target = input('Target: ')
         os.system(f'ping {target} ')
+        input('Press enter to exit')
     def fakeMe():
         locale = input('locale: ')
         fake = Faker(locale)
@@ -118,6 +125,7 @@ def bi6():
         print(f'name:' + fake.name())
         print(fake.ipv4_private())
         print(fake.address())
+        input('Press enter to exit')
         
     def windowsWifi():
         data = subprocess.check_output(['netsh', 'wlan', 'show', 'profiles']).decode('utf-8').split('\n')
@@ -131,6 +139,7 @@ def bi6():
                     wifitxt.write(results)
             except :
                 print ("{:<30}|  {:<}".format(i, ""))
+            input('Press enter to exit')
     def getIpInfo():
         try:
             ip_address = sys.argv[1]
@@ -145,15 +154,18 @@ def bi6():
         # print the ip info
         for key, value in details.all.items():
             print(f"{key}: {value}")
+        input('Press enter to exit')
             
     def get_current_macos_address(iface):
         # use the ifconfig command to get the interface details, including the MAC address
         output = subprocess.check_output(f"ifconfig {iface}", shell=True).decode()
         return re.search("ether (.+) ", output).group().split()[1].strip()
+        input('Press enter to exit')
     def macos_spoofMac():
         mac = input('Preferred Mac Address: ')
         card = input('Network Card: ')
         os.system(f'brew install spoof-mac && sudo spoof-mac set {card} {mac}')
+        input('Press enter to exit')
     
     command = input('what do you want to do? : ')
     
