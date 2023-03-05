@@ -11,6 +11,10 @@ faker
 subprocess
 ipinfo
 sys
+paramiko
+colorama
+tqdm
 subprocess
 string
 random
+pynput
