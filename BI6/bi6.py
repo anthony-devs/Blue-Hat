@@ -58,7 +58,7 @@ def bi6():
         RESET = Fore.RESET
         BLUE  = Fore.BLUE
         wordlist = input('Path to wordlist : ')
-        hostname = input('Target : ')
+        hostname = input('Host : ')
         username = input('username : ')
         usrport = int(input('Port : '))
         passwords = codecs.open(wordlist, 'r', encoding='utf-8', errors='ignore').read().split("\n")
@@ -261,16 +261,10 @@ def bi6():
                 return False
             else:
                 # the connection was established, port is open!
+                print(f'[+] {target}:{i} Port {res} ')
                 return True
-        
-        for i in range(int(begin), int(end) + 1):
-            res = nmap.PortScanner().scan(target,str(i))
-            res = res['scan'][target]['tcp'][i]['state']
             
-            if is_port_open(target,i):
-                print(f'{GREEN}[+] {target}:{i} Port {res} ')
-            else:
-                print(f'{RED}[-] {target}:{i} Port {res}')
+            
             
     def pyPhisher():
         os.system('pyphisher ')
