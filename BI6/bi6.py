@@ -58,7 +58,7 @@ def bi6():
         RESET = Fore.RESET
         BLUE  = Fore.BLUE
         wordlist = input('Path to wordlist : ')
-        hostname = input('Host : ')
+        hostname = input('Target : ')
         username = input('username : ')
         usrport = int(input('Port : '))
         passwords = codecs.open(wordlist, 'r', encoding='utf-8', errors='ignore').read().split("\n")
