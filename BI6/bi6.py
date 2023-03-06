@@ -18,7 +18,6 @@ from cryptography.fernet import Fernet
 import subprocess
 import ipinfo
 from bs4 import BeautifulSoup as bs
-#196.216.144.9
 import requests
 import sys
 from urllib.parse import urljoin, urlparse
@@ -243,26 +242,31 @@ def bi6():
         return mac.strip(":")
 
     def scanPorts():
-        target = input('Targert IP: ')
-        begin = input('Begin at: ')
-        end = input('Stop At: ')
         def is_port_open(host, port):
-            
+            """determine whether `host` has the `port` open"""
             # creates a new socket
             s = socket.socket()
             try:
                 # tries to connect to host using that port
                 s.connect((host, port))
                 # make timeout if you want it a little faster ( less accuracy )
-                # s.settimeout(0.2)
+                s.settimeout(0.2)
             except:
                 # cannot connect, port is closed
                 # return false
                 return False
             else:
                 # the connection was established, port is open!
-                print(f'[+] {target}:{i} Port {res} ')
                 return True
+
+        # get the host from the user
+        host = input("Enter the host:")
+        # iterate over ports, from 1 to 1024
+        for port in range(1, 1025):
+            if is_port_open(host, port):
+                print(f"{GREEN}[+] {host}:{port} is open      {RESET}")
+            else:
+                print(f"{GRAY}[!] {host}:{port} is closed    {RESET}", end="\r")
             
             
             
