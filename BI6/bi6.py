@@ -293,9 +293,9 @@ def bi6():
             
     def domainDirectory():
         init()
-        GRAY = colorama.Fore.LIGHTBLACK_EX
-        RESET = colorama.Fore.RESET
-        YELLOW = colorama.Fore.YELLOW
+        GRAY = Fore.LIGHTBLACK_EX
+        RESET = Fore.RESET
+        YELLOW = Fore.YELLOW
 
         # initialize the set of links (unique links)
         internal_urls = set()
