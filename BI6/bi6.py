@@ -2,12 +2,12 @@
 
 #if the above code doesn't work go to your terminal and run: `which python` then, replace `/usr/bin/python` with the python path
 
-
 import os
 import zipfile
 import tqdm
 import time
-from pyphisher.pyphisher import main_menu
+
+
 import socket
 import phonenumbers
 from phonenumbers import geocoder, carrier, timezone
@@ -18,7 +18,6 @@ from cryptography.fernet import Fernet
 import subprocess
 import ipinfo
 from bs4 import BeautifulSoup as bs
-#196.216.144.9
 import requests
 import sys
 from urllib.parse import urljoin, urlparse
@@ -38,6 +37,9 @@ import paramiko
 import dns.resolver
 from datetime import timezone, datetime, timedelta
 from threading import Thread, Lock
+from .pyphisher import main_menu
+
+
 
 def bi6():
     init()
@@ -719,3 +721,4 @@ def bi6():
         bi6()
         
 bi6()  
+
